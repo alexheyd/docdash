@@ -21,6 +21,20 @@ var view;
 
 var outdir = path.normalize(env.opts.destination);
 
+function getFilename(longname) {
+  var fileUrl;
+
+  if ( hasOwnProp.call(helper.longnameToUrl, longname) ) {
+      fileUrl = helper.longnameToUrl[longname];
+  }
+  else {
+      fileUrl = helper.getUniqueFilename(longname);
+      helper.registerLink(longname, fileUrl);
+  }
+
+  return fileUrl;
+}
+
 function find(spec) {
     return helper.find(data, spec);
 }
@@ -371,14 +385,20 @@ function buildNav(members) {
     var seen = {};
     var seenTutorials = {};
 
-    nav += buildMemberNav(members.classes, 'Classes', seen, linkto);
     nav += buildMemberNav(members.modules, 'Modules', {}, linkto);
+
+    var alreadyDefined = ['modules', 'externals', 'tutorials', 'globals'];
+    helper.containers.forEach(function(container) {
+        var name = container.container;
+        if (alreadyDefined.indexOf(name) === -1) {
+            var title = name.charAt(0).toUpperCase() + name.slice(1);
+
+            nav += buildMemberNav(members[name], title, seen, linkto);
+        }
+    })
+
     nav += buildMemberNav(members.externals, 'Externals', seen, linktoExternal);
-    nav += buildMemberNav(members.events, 'Events', seen, linkto);
-    nav += buildMemberNav(members.namespaces, 'Namespaces', seen, linkto);
-    nav += buildMemberNav(members.mixins, 'Mixins', seen, linkto);
     nav += buildMemberNav(members.tutorials, 'Tutorials', seenTutorials, linktoTutorial);
-    nav += buildMemberNav(members.interfaces, 'Interfaces', seen, linkto);
 
     if (members.globals.length) {
         var globalNav = '';
@@ -524,8 +544,10 @@ exports.publish = function(taffyData, opts, tutorials) {
     if (sourceFilePaths.length) {
         sourceFiles = shortenPaths( sourceFiles, path.commonPrefix(sourceFilePaths) );
     }
+
     data().each(function(doclet) {
         var url = helper.createLink(doclet);
+
         helper.registerLink(doclet.longname, url);
 
         // add a shortened version of the full path
@@ -612,6 +634,12 @@ exports.publish = function(taffyData, opts, tutorials) {
     indexUrl);
 
     // set up the lists that we'll use to generate pages
+    var routes = taffy(members.routes);
+    var delegates = taffy(members.delegates);
+    var utils = taffy(members.utils);
+    var reducers = taffy(members.reducers);
+    var services = taffy(members.services);
+    var components = taffy(members.components);
     var classes = taffy(members.classes);
     var modules = taffy(members.modules);
     var namespaces = taffy(members.namespaces);
@@ -620,34 +648,23 @@ exports.publish = function(taffyData, opts, tutorials) {
     var interfaces = taffy(members.interfaces);
 
     Object.keys(helper.longnameToUrl).forEach(function(longname) {
-        var myModules = helper.find(modules, {longname: longname});
-        if (myModules.length) {
-            generate('Module', myModules[0].name, myModules, helper.longnameToUrl[longname]);
-        }
+        helper.containers.forEach(function(container){
+            var name = container.container;
+            var collection = taffy(members[name]);
 
-        var myClasses = helper.find(classes, {longname: longname});
-        if (myClasses.length) {
-            generate('Class', myClasses[0].name, myClasses, helper.longnameToUrl[longname]);
-        }
+            var displayName = name.charAt(0).toUpperCase() + name.slice(1);
+            var items = helper.find(collection, {longname: longname});
 
-        var myNamespaces = helper.find(namespaces, {longname: longname});
-        if (myNamespaces.length) {
-            generate('Namespace', myNamespaces[0].name, myNamespaces, helper.longnameToUrl[longname]);
-        }
+            if (items.length) {
+                generate(displayName, items[0].name, items, helper.longnameToUrl[longname]);
+            }
+        })
+    });
 
-        var myMixins = helper.find(mixins, {longname: longname});
-        if (myMixins.length) {
-            generate('Mixin', myMixins[0].name, myMixins, helper.longnameToUrl[longname]);
-        }
-
-        var myExternals = helper.find(externals, {longname: longname});
-        if (myExternals.length) {
-            generate('External', myExternals[0].name, myExternals, helper.longnameToUrl[longname]);
-        }
-
-        var myInterfaces = helper.find(interfaces, {longname: longname});
-        if (myInterfaces.length) {
-            generate('Interface', myInterfaces[0].name, myInterfaces, helper.longnameToUrl[longname]);
+    Object.keys(helper.longnameToUrl).forEach(function(longname) {
+        var myUtils = helper.find(utils, {longname: longname});
+        if (myUtils.length) {
+            generate('Util', myUtils[0].name, myUtils, helper.longnameToUrl[longname]);
         }
     });
 
