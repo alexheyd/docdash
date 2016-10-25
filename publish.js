@@ -633,39 +633,19 @@ exports.publish = function(taffyData, opts, tutorials) {
         ).concat(files),
     indexUrl);
 
-    // set up the lists that we'll use to generate pages
-    var routes = taffy(members.routes);
-    var delegates = taffy(members.delegates);
-    var utils = taffy(members.utils);
-    var reducers = taffy(members.reducers);
-    var services = taffy(members.services);
-    var components = taffy(members.components);
-    var classes = taffy(members.classes);
-    var modules = taffy(members.modules);
-    var namespaces = taffy(members.namespaces);
-    var mixins = taffy(members.mixins);
-    var externals = taffy(members.externals);
-    var interfaces = taffy(members.interfaces);
-
     Object.keys(helper.longnameToUrl).forEach(function(longname) {
         helper.containers.forEach(function(container){
             var name = container.container;
             var collection = taffy(members[name]);
 
-            var displayName = name.charAt(0).toUpperCase() + name.slice(1);
+            var itemType = name.charAt(0).toUpperCase() + name.slice(1);
             var items = helper.find(collection, {longname: longname});
 
             if (items.length) {
-                generate(displayName, items[0].name, items, helper.longnameToUrl[longname]);
+                var item = items[0];
+                generate(itemType, item.kind + ':' + item.name, items, helper.longnameToUrl[longname]);
             }
         })
-    });
-
-    Object.keys(helper.longnameToUrl).forEach(function(longname) {
-        var myUtils = helper.find(utils, {longname: longname});
-        if (myUtils.length) {
-            generate('Util', myUtils[0].name, myUtils, helper.longnameToUrl[longname]);
-        }
     });
 
     // TODO: move the tutorial functions to templateHelper.js
