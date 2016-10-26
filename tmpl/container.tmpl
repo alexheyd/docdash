@@ -42,6 +42,7 @@
 
 <article>
     <div class="container-overview">
+    <?js var acceptedKinds = ['class', 'component', 'util', 'route', 'service', 'delegate', 'reducer']; ?>
     <?js if (doc.kind === 'module' && doc.modules) { ?>
         <?js if (doc.description) { ?>
             <div class="description"><?js= doc.description ?></div>
@@ -50,7 +51,7 @@
         <?js doc.modules.forEach(function(module) { ?>
             <?js= self.partial('method.tmpl', module) ?>
         <?js }) ?>
-    <?js } else if (doc.kind === 'class') { ?>
+    <?js } else if (acceptedKinds.indexOf(doc.kind) > -1) { ?>
         <?js= self.partial('method.tmpl', doc) ?>
     <?js } else { ?>
         <?js= self.partial('details.tmpl', doc) ?>

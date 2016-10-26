@@ -58,9 +58,10 @@ function hashToLink(doclet, hash) {
 
 function needsSignature(doclet) {
     var needsSig = false;
+    var acceptedKinds = ['function', 'class'];
 
     // function and class definitions always get a signature
-    if (doclet.kind === 'function' || doclet.kind === 'class') {
+    if (acceptedKinds.indexOf(doclet.kind) > -1) {
         needsSig = true;
     }
     // typedefs that contain functions get a signature, too
@@ -642,8 +643,7 @@ exports.publish = function(taffyData, opts, tutorials) {
             var items = helper.find(collection, {longname: longname});
 
             if (items.length) {
-                var item = items[0];
-                generate(itemType, item.kind + ':' + item.name, items, helper.longnameToUrl[longname]);
+                generate(itemType, items[0].name, items, helper.longnameToUrl[longname]);
             }
         })
     });
