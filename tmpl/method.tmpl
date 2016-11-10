@@ -66,6 +66,13 @@ var self = this;
 <?js }); ?></ul>
 <?js } ?>
 
+<?js if (data.observes) { ?>
+<h5>Observes:</h5>
+<ul>
+    <li><?js= data.observes ?></li>
+</ul>
+<?js } ?>
+
 <?js if (data.listens && listens.length) { ?>
 <h5>Listens to Events:</h5>
 <ul><?js listens.forEach(function(f) { ?>
@@ -103,4 +110,3 @@ var self = this;
         <?js= self.partial('returns.tmpl', r) ?>
     <?js });
 } } ?>
-

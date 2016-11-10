@@ -386,6 +386,7 @@ function buildNav(members) {
     var seen = {};
     var seenTutorials = {};
 
+    nav += buildMemberNav(members.tutorials, 'Tutorials', seenTutorials, linktoTutorial);
     nav += buildMemberNav(members.modules, 'Modules', {}, linkto);
 
     var alreadyDefined = ['modules', 'externals', 'tutorials', 'globals'];
@@ -399,7 +400,6 @@ function buildNav(members) {
     })
 
     nav += buildMemberNav(members.externals, 'Externals', seen, linktoExternal);
-    nav += buildMemberNav(members.tutorials, 'Tutorials', seenTutorials, linktoTutorial);
 
     if (members.globals.length) {
         var globalNav = '';

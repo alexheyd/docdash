@@ -48,6 +48,10 @@
 
         <th>Type</th>
 
+        <?js if (data.observes) { ?>
+        <th>Observes:</th>
+        <?js } ?>
+
         <?js if (props.hasAttributes) {?>
         <th>Attributes</th>
         <?js } ?>
@@ -77,6 +81,12 @@
                 <?js= self.partial('type.tmpl', prop.type.names) ?>
             <?js } ?>
             </td>
+
+            <?js if (data.observes) { ?>
+            <td class="observes">
+              <?js= data.observes ?>
+            </td>
+            <?js } ?>
 
             <?js if (props.hasAttributes) {?>
                 <td class="attributes">
